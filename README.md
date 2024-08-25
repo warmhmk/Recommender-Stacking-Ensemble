@@ -1,31 +1,32 @@
 # Recommender System Using Stacking Ensemble with Random Forest Regression
 
-This project demonstrates the implementation of a sophisticated recommender system using a stacking ensemble method. The approach leverages multiple collaborative filtering models and combines their predictions using a Random Forest regressor. Stacking as a method is often underutilized in traditional recommender systems, but this project showcases its potential to enhance prediction accuracy by using predictions from different models as inputs for further training.
+This project demonstrates the implementation of a sophisticated recommender system using a stacking ensemble method. The approach leverages multiple collaborative filtering models and combines their predictions using a Random Forest regressor. While ensemble models are commonly used in machine learning, applying them effectively in recommender systems requires careful consideration, particularly when dealing with limited training data.
 
 ## Overview
 
-The key challenge addressed in this project is the limited data available for training the final model. While standard train-test splits might lead to overfitting and poor generalization, this project utilizes a stacking approach combined with cross-validation to mitigate this issue. By training multiple base models on different data splits and stacking their predictions, the Random Forest regressor can be trained on a more comprehensive dataset, leading to better generalization and improved prediction accuracy.
+The primary challenge addressed in this project is the limited data available for training the final model. Initially, the goal was to use a Random Forest model as the final predictor in an ensemble of collaborative filtering models like SVD, NMF, KNN, and Co-Clustering. However, a simple train-test split would have resulted in insufficient data to train the Random Forest model effectively, leading to potential overfitting and poor generalization.
 
 ## Stacking Methodology
 
-### Cross-Validation and Stacking
+### The Challenge
 
-1. **Cross-Validation**: The dataset contains about 700,000 rows of training data. Instead of a simple train-test split, the project uses 5-fold cross-validation to generate multiple train-test splits. Each fold has approximately 500,000 rows for training and 100,000 rows for testing.
+When I first set out to use a Random Forest regressor as the meta-model in an ensemble approach, it became evident that the typical train-test split wouldn't provide enough data to train the model effectively. With only about 100,000 rows available for training after the split, the model was likely to overfit, resulting in poor performance on unseen data.
 
-2. **Base Model Training**: During each fold, multiple collaborative filtering models (such as SVD and NMF) are trained on the training subset and then used to predict ratings for the test subset within that fold.
+### The Solution
 
-3. **Prediction Collection**: Unlike typical cross-validation where the goal is to evaluate performance, here the focus is on collecting predictions for each test fold. After running through all folds, the project has predictions from both SVD and NMF for all the rows in the training data (totaling 700,000 rows).
+To address this, I implemented a stacking methodology combined with cross-validation. This approach ensured that the Random Forest model was trained on a much larger and more diverse dataset, improving its ability to generalize.
 
-4. **Combining Predictions**: The collected predictions from all folds are then used to form a comprehensive dataset. This dataset includes not just the predictions from SVD and NMF, but also additional features such as user average ratings, total votes, and helpful votes.
+1. **Cross-Validation and Stacking**: Instead of a single train-test split, the dataset was split into 5 folds using cross-validation. In each fold, the base models (SVD, NMF, KNN, and Co-Clustering) were trained on the training subset, and their predictions were made on the validation subset.
 
-5. **Training the Meta-Model**: This enriched dataset, now containing 700,000 rows with predictions and additional features, is used to train the Random Forest regressor. The Random Forest model acts as a meta-model, learning how to best combine the inputs from the base models to make the final predictions.
+2. **Prediction Collection**: The predictions from these base models for each fold were collected. This process was repeated across all folds, resulting in predictions for every row in the original training dataset.
 
-### Final Prediction
+3. **Training the Meta-Model**: These predictions, along with other user features such as average rating, total votes, and helpful votes, were used to train the Random Forest regressor. This way, the Random Forest model could learn from a much larger and more representative set of data.
 
-When making final predictions on the test data:
+4. **Final Prediction**: When making the final predictions on the test data, the Random Forest model used the stacked predictions and the additional user features to produce the final ratings.
 
-- The Random Forest model uses the stacked predictions (e.g., from SVD and NMF) and the additional features (e.g., user average rating, total votes, helpful votes) as inputs.
-- The final predictions are then generated by the Random Forest model and saved to a CSV file for submission.
+The diagram below illustrates this process:
+
+![Stacking Methodology](path-to-your-diagram.png)
 
 ### Advantages of the Stacking Approach
 
@@ -35,7 +36,7 @@ When making final predictions on the test data:
 
 ## Key Features
 
-- **Ensemble Learning**: Combines predictions from multiple collaborative filtering models to improve accuracy.
+- **Ensemble Learning**: Combines predictions from multiple collaborative filtering models (SVD, NMF, KNN, Co-Clustering) to improve accuracy.
 - **Cross-Validation Stacking**: Utilizes cross-validation to generate diverse training data for the Random Forest model, enhancing generalization.
 - **GPU Acceleration**: Leverages RAPIDS for faster model training on GPU, significantly reducing computation time.
 - **Comprehensive Feature Set**: Incorporates additional features such as user rating patterns, total votes, and helpful votes to boost prediction accuracy.
@@ -67,11 +68,9 @@ When making final predictions on the test data:
    ```
    import implicit
    from sklearn.preprocessing import MinMaxScaler
-   from sklearn.metrics import mean_squared_error
    from sklearn.model_selection import KFold
    from sklearn.ensemble import RandomForestRegressor
    from surprise import SVD, NMF, Dataset, Reader
-   import torch
    import pandas as pd
    import numpy as np
    from tqdm import tqdm
@@ -81,7 +80,6 @@ When making final predictions on the test data:
    ```
    train_df = pd.read_csv('/train.csv')
    test_df = pd.read_csv('/test.csv')
-   print(train_df.shape, test_df.shape)
    ```
 
 5. **Cross-Validation and Stacking**: Run the cross-validation process to generate predictions from base models and stack them.
@@ -92,7 +90,7 @@ When making final predictions on the test data:
 
 6. **Train Random Forest**: Use the collected predictions and additional features to train the Random Forest model.
    ```
-   rf = RandomForestRegressor(n_estimators=150, max_depth=10, random_state=44, n_streams=1)
+   rf = RandomForestRegressor(n_estimators=150, max_depth=10, random_state=44)
    rf.fit(X_train, y_train)
    ```
 
@@ -105,4 +103,4 @@ When making final predictions on the test data:
 
 ## Conclusion
 
-This project highlights the power of stacking ensemble methods, particularly in scenarios with limited training data. By leveraging
+This project highlights the effectiveness of stacking ensemble methods in recommender systems, particularly when dealing with limited training data. By combining cross-validation with a stacking approach, the Random Forest regressor could be trained on a richer dataset, leading to better generalization and improved prediction accuracy.
