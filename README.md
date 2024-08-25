@@ -31,36 +31,36 @@ The recommender system is designed to predict user ratings for items based on hi
 
 1. **Mount Google Drive**: The datasets and code should be stored in Google Drive. Begin by mounting the drive:
 
-    '''
+    ```
     from google.colab import drive
     drive.mount('/content/drive')
-    '''
+    ```
 
 2. **Install Required Libraries**: Install the necessary libraries, including `implicit`, `scikit-surprise`, and RAPIDS:
 
-    '''
+    ```
     !pip install implicit
     !pip install scikit-surprise
     !git clone https://github.com/rapidsai/rapidsai-csp-utils.git
     !python rapidsai-csp-utils/colab/pip-install.py
-    '''
+    ```
 
 3. **Data Exploration**: Load and explore the data:
 
-    '''
+    ```
     train_df = pd.read_csv('/train.csv')
     test_df = pd.read_csv('/test.csv')
     train_df.head()
-    '''
+    ```
 
 4. **Model Training**: The code involves cross-validation to train multiple models (SVD, NMF, KNN, Co-Clustering) and uses their predictions as features for the Random Forest regressor.
 
 5. **Make Predictions**: Once the models are trained, predictions are made on the test dataset, and the results are saved to a CSV file.
 
-    '''
+    ```
     res = pd.DataFrame({'ID': range(len(y_pred)), 'rating': y_pred})
     res.to_csv('submission.csv', index=False)
-    '''
+    ```
 
 ## Dataset
 
