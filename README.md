@@ -26,7 +26,7 @@ To address this, I implemented a stacking methodology combined with cross-valida
 
 The diagram below illustrates this process:
 
-![Stacking Methodology](path-to-your-diagram.png)
+![Stacking Methodology](diagram.png)
 
 ### Advantages of the Stacking Approach
 
