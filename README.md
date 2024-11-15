@@ -1,6 +1,6 @@
 # Recommender System Using Stacking Ensemble with Random Forest Regression
 
-This project demonstrates the implementation of a sophisticated recommender system using a stacking ensemble method. The approach leverages multiple collaborative filtering models and combines their predictions using a Random Forest regressor. While ensemble models are commonly used in machine learning, applying them effectively in recommender systems requires careful consideration, particularly when dealing with limited training data.
+This project demonstrates the implementation of a recommender system using a stacking ensemble method. The approach leverages multiple collaborative filtering models and combines their predictions using a Random Forest regressor. While ensemble models are commonly used in machine learning, applying them effectively in recommender systems requires careful consideration, particularly when dealing with limited training data.
 
 ## Overview
 
